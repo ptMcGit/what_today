@@ -1,0 +1,15 @@
+# use pattern matching
+
+# topmost directory where search starts
+start_of_search: "/test"
+
+# what should be ignored
+ignore:
+  - "/test"
+
+#what should not be ignored
+not_ignore:
+  - "/test"
+
+#what time frame is considered
+start_of_day: "6pm"
