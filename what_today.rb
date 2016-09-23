@@ -1,21 +1,46 @@
 #!/usr/bin/env ruby
 
-require 'find'
-require 'yaml'
 require 'pry'
+require './file_finder.rb'
+require './criteria.rb'
+require './git_wrapper.rb'
+require './helpers.rb'
+require './shell_wrapper.rb'
+require './test_files/test_repos.rb'
 
-IGNORE_FILE     = '~/ignore.yml'
-ignore_file = YAML.load_file(IGNORE_FILE)
+include GitWrapper
+include ShellWrapper
+include Helpers
 
-DEFAULT_TREE    = ENV['HOME'] ||= (Dir.chdir && Dir.pwd)
-START_OF_DAY    = "6am"
-GIT_FOLDER      = ".git"
+def debug
+  binding.pry
+  exit
+end
 
-repos_to_check = []
+begin
+  search_critera = Criteria.for
+rescue Criteria::FileNotFoundError => e
+  puts "File not found. Using defaults..."
+  sleep 1
+  search_criteria = Criteria.new
+end
 
-Find.find(DEFAULT_TREE) do |path|
-  #repos_to_check.push if
-  if path =~ /#{GIT_FOLDER}$/ && FileTest.directory?(path)
-    binding.pry
-  end
+#finder = FileFinder.new(search_criteria.prepare)
+#repos = process_directories(finder.results)
+
+repos.each do |dest|
+  system( "clear" )
+  next if
+    shell_command(git_status_ok?, dest).empty? &&
+    search_criteria.ignore_updated_repos
+
+  exec_method(git_status, dest)
+
+  print "\nVisit repo at #{dest} (y/n)? "
+
+  response = gets.chomp
+  next unless ["y","Y"].include?(response)
+
+  new_shell dest
+
 end

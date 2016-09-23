@@ -1,11 +1,11 @@
 # use pattern matching
 
 # topmost directory where search starts
-start_of_search: "/test"
+start_of_search:
 
 # what should be ignored
 ignore:
-  - "/test"
+  - "/.Trash"
 
 #what should not be ignored
 not_ignore:
