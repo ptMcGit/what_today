@@ -5,11 +5,12 @@ require './file_finder.rb'
 require './criteria.rb'
 require './git_wrapper.rb'
 require './helpers.rb'
+require './shell_wrapper_parent.rb'
 require './shell_wrapper.rb'
+
 require './test_files/test_repos.rb'
 
 include GitWrapper
-include ShellWrapper
 include Helpers
 
 def debug
@@ -27,20 +28,27 @@ end
 
 #finder = FileFinder.new(search_criteria.prepare)
 #repos = process_directories(finder.results)
+binding.pry
 
-repos.each do |dest|
+shell = ShellWrapper.new
+
+repos.each do |r|
   system( "clear" )
+
+  shell.working_dir = r
+
   next if
-    shell_command(git_status_ok?, dest).empty? &&
-    search_criteria.ignore_updated_repos
+    search_criteria.ignore_updated_repos &&
+    shell.exec(git_status_ok?).empty?
 
-  exec_method(git_status, dest)
 
-  print "\nVisit repo at #{dest} (y/n)? "
+  shell.shell git_status
+
+  print "\nVisit repo at #{r} (y/n)? "
 
   response = gets.chomp
   next unless ["y","Y"].include?(response)
 
-  new_shell dest
+  shell.new_shell
 
 end
