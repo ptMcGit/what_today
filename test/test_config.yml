@@ -1,0 +1,12 @@
+# file for testing
+
+start_of_search:
+  #{HOME}
+
+ignored_repos:
+
+tracked_repos:
+  - /bash_libraries
+  - /other_repo
+
+prune_paths:
