@@ -2,7 +2,7 @@ require 'yaml'
 require './file_finder.rb'
 
 class Criteria
-  attr_reader :start_of_search, :ignore, :not_ignore, :ignore_updated_repos
+  attr_reader :start_of_search
 
   class FileNotFoundError < StandardError
   end
@@ -11,7 +11,16 @@ class Criteria
     @config_file            = opts[:config_file]
 
     set_configs
-   end
+  end
+
+  def to_h
+    {
+      start_directory:  @start_of_search,
+      ignore_repos:     @ignored_repos,
+      track_repos:      @tracked_repos,
+      prune_paths:      @prune_paths
+    }
+  end
 
 protected
 
@@ -106,7 +115,6 @@ protected
     @prune_paths        = config_data["prune_paths"]        ||= []
     @ignored_repos      = config_data["ignored_repos"]      ||= []
     @tracked_repos      = config_data["tracked_repos"]      ||= []
-    @ignore_mode        = @ignored_repos.count > 0
   end
 
 end

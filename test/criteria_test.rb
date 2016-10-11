@@ -36,7 +36,6 @@ class CriteriaClassTests < MiniTest::Test
     assert_equal c.instance_variable_get("@start_of_search"), ENV["HOME"]
     assert_equal c.instance_variable_get("@ignored_repos").count, 0
     assert_equal c.instance_variable_get("@tracked_repos").count, 2
-    assert_equal c.instance_variable_get("@ignore_mode"), false
   end
 
 end
