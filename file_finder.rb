@@ -11,14 +11,15 @@ class FileFinder
   include Find
 
   def initialize opts={criteria: nil}
-    @start_directory    = opts[:start_directory] ||= "."
-    @save_patterns
-#    @names              = escape_strings( opts[:names] )
-#    @include_file_types = opts[:include_file_types]
-#    @exclude_file_types = opts[:exclude_file_types]
-    @ignore_repos       = opts[:ignore_repos] ||= []
-    @track_repos        = opts[:track_repos] ||= []
-    #    @ignore_repos       = escape_strings( opts[:ignore_repos] )
+    if opts[:criteria]
+      opts = opts[:criteria].to_h
+    end
+
+    @start_directory    = opts[:start_directory]    ||= "."
+    @ignore_repos       = opts[:ignore_repos]       ||= []
+    @track_repos        = opts[:track_repos]        ||= []
+    @prune_paths        = opts[:prune_paths]        ||= []
+
     @repos              = []
     query!
   end
@@ -37,13 +38,15 @@ class FileFinder
     raise TypeError if (arg.class != Array)
   end
 
-  def file_tree
-    find(@start_directory)
+  def find_files &block
+    find(@start_directory).each &block
   end
 
   def query!
     @repos = []
-    file_tree.each do |path|
+    find_files do |path|
+#      binding.pry
+      prune if @prune_paths.include? path
       next if File.basename(path) != GIT_DIR_NAME
       if not @ignore_repos.empty?
         @repos.push(File.dirname( path )) unless @ignore_repos.include?(File.dirname( path ))
