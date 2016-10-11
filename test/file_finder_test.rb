@@ -13,53 +13,79 @@ class FileFinderClassTests < MiniTest::Test
 
   class FindMock < FileFinder
 
-    attr_accessor :ignore_repos, :track_repos
+    attr_accessor   :ignore_repos, :track_repos, :stub_prune_path
+    attr_reader     :stub_files
 
     def initialize *args
-      super *args
-    end
-
-    def file_tree
-      [
+      @stub_files = [
         "/dir",
         "/dir/subdir1",
         "/dir/subdir1/.git",
         "/dir/subdir2",
         "/dir/subdir2/.git",
-        "/dir/subdir3"
-      ].to_enum
+        "/dir/subdir3",
+        "/dir/subdir3/.git",
+        "/dir/subdir4"
+      ]
+      @stub_prune_path = nil
+
+      super *args
     end
 
+    def find_files &block
+      catch(:prune) do |p|
+        binding.pry
+      end
+
+      @stub_files.each &block
+
+    end
+
+#    def prune
+#      binding.pry
+#      @stub_files.delete_if { |p| p[%r{ #{@stub_prune_path} }] }
+#    end
+
   end
 
-  def setup
-    @ff = FindMock.new
-  end
+#  def setup
+#    @ff = FindMock.new
+#  end
 
-  def mock_results object
-  end
-
-  def find_repos_current_dir
-    Array(
-      find(File.dirname( $0 ))
-    )
+  def create_find_mock config=nil
+    FindMock.new( criteria: config )
   end
 
   def test_finds_mock_repos
-    assert_equal ["/dir/subdir1","/dir/subdir2"], @ff.repos
+    ff = create_find_mock
+    assert_equal ["/dir/subdir1","/dir/subdir2","/dir/subdir3"], ff.repos
+    refute ff.repos.include? "/dir/subdir4"
   end
 
   def test_ignores_specified_repos
-    @ff.ignore_repos.push("/dir/subdir1")
-    @ff.query!
-    assert_equal ["/dir/subdir2"], @ff.repos
+    ff = create_find_mock( {ignore_repos: ["/dir/subdir1"]} )
+    assert_equal ["/dir/subdir2", "/dir/subdir3"], ff.repos
   end
 
   def test_tracks_specified_repos
-    @ff.track_repos.push("/dir/subdir1")
-    @ff.query!
-    assert_equal ["/dir/subdir1"], @ff.repos
+    ff = create_find_mock( {track_repos: ["/dir/subdir1"]} )
+    assert_equal ["/dir/subdir1"], ff.repos
   end
+
+  def test_ignores_takes_precedences
+    ff = create_find_mock( {
+                             track_repos:   ["/dir/subdir1"],
+                             ignore_repos:  ["/dir/subdir2"]
+                           } )
+    assert_equal ["/dir/subdir1", "/dir/subdir3"], ff.repos
+  end
+
+#  focus
+  def test_can_prune_paths
+    ff = create_find_mock( {prune_paths: ["/dir/subdir2"]} )
+    assert_equal ["/dir/subdir1", "/dir/subdir3"], ff.repos
+  end
+
 
 
 end
