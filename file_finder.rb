@@ -1,12 +1,11 @@
 require 'find'
-#include File
 
 GIT_DIR_NAME=".git"
 
 class FileFinder
 
   attr_reader :repos
-  attr_reader :start_directory, :include_file_types, :exclude_file_types, :name, :results
+  attr_reader :start_directory
 
   include Find
 
@@ -34,7 +33,7 @@ class FileFinder
     raise TypeError if (arg.class != Array)
   end
 
-  def ignore_repos= arg
+  def track_repos= arg
     raise TypeError if (arg.class != Array)
   end
 
@@ -45,7 +44,6 @@ class FileFinder
   def query!
     @repos = []
     find_files do |path|
-#      binding.pry
       prune if @prune_paths.include? path
       next if File.basename(path) != GIT_DIR_NAME
       if not @ignore_repos.empty?
@@ -55,18 +53,7 @@ class FileFinder
       else
         @repos.push(File.dirname( path ))
       end
-#      prune if should_prune_path?(path)
-#      puts path if File.basename(path) == GIT_DIR_NAME
     end
-
-
-
-      #      File.basename(path) == name
-
-#    @query = prepare_arguments
-    #
-    #%x[ find #{@start_directory} -type d -print0  ].split("\u0000")
-#    @results = %x[ find #{@query} ].split("\u0000")
   end
 
   def should_prune_path? path
@@ -81,60 +68,5 @@ class FileFinder
   def match_on_pattern(string, pattern)
     p = pattern.gsub('.','\.').gsub('/','\/').gsub('*','.*')
     string[/#{p}/]
-  end
-
-  def ignore_paths
-
-  end
-
-
-  def prepare_arguments
-    #
-    @start_directory + " " +
-      prepare_file_args +
-      prepare_names +
-      prepare_paths
-  end
-
-  def prepare_file_args
-    includes = []
-    excludes = []
-    both     = []
-
-    if @include_file_types
-      @include_file_types.each do |i|
-        includes.push " -type #{i} "
-      end
-      both.push '\(' + includes.join(" -o ") + '\)'
-    end
-
-    if @exclude_file_types
-      @exclude_file_types.each do |e|
-
-        excludes.push " ! -type #{e} "
-      end
-      both.push '\(' + excludes.join(" -o ") + '\)'
-    end
-
-    return both.join(" -a " ) if both.any?
-    ""
-  end
-
-  def prepare_names
-    " -name " + @names[0]
-  end
-
-  def prepare_paths
-    return ' -print0 ' unless @ignore_paths
-
-    ' -a \( ' +
-
-    @ignore_paths.map { |path|
-      " -path " + path + " -prune -o "
-    }.join +
-
-    ' -print0 \) '
-
-    #' -a \( -path ' + @ignore_paths.join(" -prune -o ") + " -prune -o -print0 " + ' \)'
   end
 end
