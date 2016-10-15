@@ -1,7 +1,5 @@
 require_relative './test_helper.rb'
 
-Minitest::Reporters.use! Minitest::Reporters::ProgressReporter.new
-
 class FileFinderClassTests < MiniTest::Test
 
   TEST_DIR_PREFIX = File.dirname(Dir.pwd + "/" + $0) + "/test_dir_tree/dir"

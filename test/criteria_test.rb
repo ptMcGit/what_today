@@ -1,7 +1,5 @@
 require_relative './test_helper.rb'
 
-Minitest::Reporters.use! Minitest::Reporters::ProgressReporter.new
-
 class CriteriaClassTests < MiniTest::Test
 
   TEST_CONFIG_FILE = File.dirname(Dir.pwd + "/" + $0) + "/test_config.yml"
