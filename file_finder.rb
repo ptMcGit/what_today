@@ -1,8 +1,8 @@
 require 'find'
 
-GIT_DIR_NAME=".git"
-
 class FileFinder
+
+  GIT_DIR_NAME=".git"
 
   attr_reader :repos
   attr_reader :start_directory
