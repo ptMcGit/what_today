@@ -52,11 +52,11 @@ class ShellWrapper
   private
 
   def exec_command command
-    %x[ #{cd} && #{@shell} -c "#{command}" ]
+    %x[ #{cd} && #{@shell} -c '#{command}' ]
   end
 
   def shell_command command
-    system( "#{cd} && #{@shell} -c \"#{command}\"" )
+    system( "#{cd} && #{@shell} -c '#{command}'" )
   end
 
   def cd
