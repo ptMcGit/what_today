@@ -1,59 +1,57 @@
 require 'minitest/autorun'
 require 'minitest/reporters'
 require 'minitest/focus'
-
+require 'find'
 require_relative '../criteria.rb'
+require_relative '../file_finder.rb'
 require 'pry'
 
 Minitest::Reporters.use! Minitest::Reporters::ProgressReporter.new
 
 class FileFinderClassTests < MiniTest::Test
 
-  include Find
+  TEST_DIR_PREFIX = File.dirname(Dir.pwd + "/" + $0) + "/test_dir_tree/dir"
+  EXPECTED_DIR_ITEMS = Find.find( TEST_DIR_PREFIX ).map do |f|
+    f.sub( /#{File.dirname(TEST_DIR_PREFIX)}/,"")
+  end.to_a
+
+#   include Find
 
   class FindMock < FileFinder
 
     attr_accessor   :ignore_repos, :track_repos, :stub_prune_path
     attr_reader     :stub_files
 
-    def initialize *args
-      @stub_files = [
-        "/dir",
-        "/dir/subdir1",
-        "/dir/subdir1/.git",
-        "/dir/subdir2",
-        "/dir/subdir2/.git",
-        "/dir/subdir3",
-        "/dir/subdir3/.git",
-        "/dir/subdir4"
-      ]
-      @stub_prune_path = nil
-
-      super *args
+    def remove_test_dir_prefix!
+      @repos.map! { |f| f.sub( /#{File.dirname(TEST_DIR_PREFIX)}/,"" ) }
     end
-
-    def find_files &block
-      catch(:prune) do |p|
-        binding.pry
-      end
-
-      @stub_files.each &block
-
-    end
-
-#    def prune
-#      binding.pry
-#      @stub_files.delete_if { |p| p[%r{ #{@stub_prune_path} }] }
-#    end
-
   end
 
-#  def setup
-#    @ff = FindMock.new
-#  end
+  def create_find_mock config={}
+    f = FindMock.new(
+      criteria: {start_directory: TEST_DIR_PREFIX}.merge(config)
+    )
+    f.remove_test_dir_prefix!
+    f
+  end
 
-  def create_find_mock config=nil
-    FindMock.new( criteria: config )
+  def create_ff config={}
+    f = FileFinder.new( criteria: {start_directory: TEST_DIR_PREFIX}.merge(config) )
+    f.remove_test_dir_prefix!
+    f
+  end
+
+  def test_dir_contents_are_as_expected
+    assert_equal EXPECTED_DIR_ITEMS, [
+                   "/dir",
+                   "/dir/subdir1",
+                   "/dir/subdir1/.git",
+                   "/dir/subdir2",
+                   "/dir/subdir2/.git",
+                   "/dir/subdir3",
+                   "/dir/subdir3/.git",
+                   "/dir/subdir4"
+                 ]
   end
 
   def test_finds_mock_repos
@@ -63,29 +61,26 @@ class FileFinderClassTests < MiniTest::Test
   end
 
   def test_ignores_specified_repos
-    ff = create_find_mock( {ignore_repos: ["/dir/subdir1"]} )
+    ff = create_find_mock( {ignore_repos: [TEST_DIR_PREFIX + "/subdir1"]} )
     assert_equal ["/dir/subdir2", "/dir/subdir3"], ff.repos
   end
 
   def test_tracks_specified_repos
-    ff = create_find_mock( {track_repos: ["/dir/subdir1"]} )
+    ff = create_find_mock( {track_repos: [TEST_DIR_PREFIX + "/subdir1"]} )
     assert_equal ["/dir/subdir1"], ff.repos
   end
 
   def test_ignores_takes_precedences
     ff = create_find_mock( {
-                             track_repos:   ["/dir/subdir1"],
-                             ignore_repos:  ["/dir/subdir2"]
+                             track_repos:   [TEST_DIR_PREFIX + "/subdir1"],
+                             ignore_repos:  [TEST_DIR_PREFIX + "/subdir2"]
                            } )
     assert_equal ["/dir/subdir1", "/dir/subdir3"], ff.repos
   end
 
-#  focus
   def test_can_prune_paths
-    ff = create_find_mock( {prune_paths: ["/dir/subdir2"]} )
+    ff = create_find_mock( {prune_paths: [TEST_DIR_PREFIX + "/subdir2"]} )
     assert_equal ["/dir/subdir1", "/dir/subdir3"], ff.repos
   end
-
-
 
 end
