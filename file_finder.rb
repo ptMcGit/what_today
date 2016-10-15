@@ -23,12 +23,6 @@ class FileFinder
     query!
   end
 
-  def escape_strings array
-    #
-    array.map { |i| i.sub(/(.*)/, '\'\1\'') }
-  end
-
-
   def ignore_repos= arg
     raise TypeError if (arg.class != Array)
   end
@@ -44,7 +38,7 @@ class FileFinder
   def query!
     @repos = []
     find_files do |path|
-      prune if @prune_paths.include? path
+      prune if should_prune_path? path
       next if File.basename(path) != GIT_DIR_NAME
       if not @ignore_repos.empty?
         @repos.push(File.dirname( path )) unless @ignore_repos.include?(File.dirname( path ))
@@ -57,12 +51,7 @@ class FileFinder
   end
 
   def should_prune_path? path
-
-    @ignore_repos.each do |pattern|
-
-      return true if match_on_pattern(path, pattern)
-    end
-    return false
+    @prune_paths.include? path
   end
 
   def match_on_pattern(string, pattern)
