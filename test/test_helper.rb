@@ -1,0 +1,7 @@
+require 'minitest/autorun'
+require 'minitest/reporters'
+require 'minitest/focus'
+require 'find'
+require_relative '../criteria.rb'
+require_relative '../file_finder.rb'
+require_relative '../git_shell_wrapper.rb'
