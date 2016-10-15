@@ -1,9 +1,4 @@
-require 'minitest/autorun'
-require 'minitest/reporters'
-require 'minitest/focus'
-
-require_relative '../criteria.rb'
-require 'pry'
+require_relative './test_helper.rb'
 
 Minitest::Reporters.use! Minitest::Reporters::ProgressReporter.new
 

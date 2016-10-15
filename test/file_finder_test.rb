@@ -1,10 +1,4 @@
-require 'minitest/autorun'
-require 'minitest/reporters'
-require 'minitest/focus'
-require 'find'
-require_relative '../criteria.rb'
-require_relative '../file_finder.rb'
-require 'pry'
+require_relative './test_helper.rb'
 
 Minitest::Reporters.use! Minitest::Reporters::ProgressReporter.new
 
@@ -19,6 +13,7 @@ class FileFinderClassTests < MiniTest::Test
 
   class FindMock < FileFinder
 
+    GIT_DIR_NAME=".git_stub"
     attr_accessor   :ignore_repos, :track_repos, :stub_prune_path
     attr_reader     :stub_files
 
