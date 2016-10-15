@@ -8,6 +8,9 @@ require 'pry'
 Minitest::Reporters.use! Minitest::Reporters::ProgressReporter.new
 
 class CriteriaClassTests < MiniTest::Test
+
+  TEST_CONFIG_FILE = File.dirname(Dir.pwd + "/" + $0) + "/test_config.yml"
+
   def assert_for_criteria criteria_object
     assert_equal 4, 4
   end
@@ -31,8 +34,8 @@ class CriteriaClassTests < MiniTest::Test
   end
 
   def test_process_yaml_test_config_file
-    c = Criteria.new(config_file: "./test/test_config.yml")
-    assert_equal c.instance_variable_get("@config_file"), "./test/test_config.yml"
+    c = Criteria.new(config_file: TEST_CONFIG_FILE)
+     assert_equal c.instance_variable_get("@config_file"), TEST_CONFIG_FILE
     assert_equal c.instance_variable_get("@start_of_search"), ENV["HOME"]
     assert_equal c.instance_variable_get("@ignored_repos").count, 0
     assert_equal c.instance_variable_get("@tracked_repos").count, 2

@@ -1,5 +1,4 @@
 require 'yaml'
-require './file_finder.rb'
 
 class Criteria
   attr_reader :start_of_search
