@@ -61,4 +61,22 @@ class ShellWrapperTests < MiniTest::Test
     }
   end
 
+def test_can_create_exec_aliases_from_module_methods
+    s = ShellWrapper.new
+    m = GitWrapper
+
+    s.include_module_as_exec_aliases m
+    assert m.public_instance_methods.
+            select { |m| ! s.methods.include? m }.
+            empty?
+  end
+
+  def test_cannot_create_exec_aliases_from_methods_of_unrequired_modules
+    s = ShellWrapper.new
+    refute defined?(NonExistentModule)
+    assert_raises("cannot include module that has not been required") {
+      s.include_module_as_exec_aliases NonExistentModule
+    }
+  end
+
 end
