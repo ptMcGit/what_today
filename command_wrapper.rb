@@ -37,7 +37,7 @@
 
     def include_module_as_exec_aliases module_arg
       if ( defined?(module_arg) && module_arg.is_a?(Module) )
-        module_arg.public_instance_methods.each do |meth|
+        module_arg.singleton_methods.each do |meth|
           exec_alias(meth.to_s, module_arg.send(meth))
         end
       else
