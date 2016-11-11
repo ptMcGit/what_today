@@ -1,11 +1,17 @@
 require_relative './test_helper.rb'
+require 'tempfile'
 
 class CriteriaClassTests < MiniTest::Test
 
-  TEST_CONFIG_FILE = File.dirname(Dir.pwd + "/" + $0) + "/test_config.yml"
-
-  def assert_for_criteria criteria_object
-    assert_equal 4, 4
+  def config_file_template
+    %{
+start_of_search: #{ENV['HOME']}
+prune_paths:
+  - /repo_2
+  - /repo_2
+ignored_repos:
+tracked_repos:
+}
   end
 
   def provides_default_config? c
@@ -27,11 +33,14 @@ class CriteriaClassTests < MiniTest::Test
   end
 
   def test_process_yaml_test_config_file
-    c = Criteria.new(config_file: TEST_CONFIG_FILE)
-     assert_equal c.instance_variable_get("@config_file"), TEST_CONFIG_FILE
+    require 'tempfile'
+    cf = Tempfile.new(File.basename($0))
+    cf.write(config_file_template)
+    c = Criteria.new(config_file: cf)
+    assert_equal c.instance_variable_get("@config_file"), cf
     assert_equal c.instance_variable_get("@start_of_search"), ENV["HOME"]
     assert_equal c.instance_variable_get("@ignored_repos").count, 0
-    assert_equal c.instance_variable_get("@tracked_repos").count, 2
+    assert_equal c.instance_variable_get("@tracked_repos").count, 0
   end
 
 end
