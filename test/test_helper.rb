@@ -9,7 +9,5 @@ require_relative '../file_finder.rb'
 require_relative '../shell_wrapper.rb'
 require_relative '../command_wrapper.rb'
 require_relative '../git_wrapper.rb'
-require_relative '../git_shell_wrapper'
-include GitWrapper
 
 Minitest::Reporters.use! Minitest::Reporters::ProgressReporter.new

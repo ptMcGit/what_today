@@ -2,13 +2,14 @@ require_relative './test_helper.rb'
 
 class CommandWrapperTests < MiniTest::Test
 
+  TEST_MODULE = GitWrapper
+
   def test_can_create_exec_alias
     s = CommandWrapper.new
     s.exec_alias( "echo", 'echo' )
     r = s.echo "hello world"
     assert_equal "hello world", r.chomp
   end
-
 
   def test_can_create_shell_alias
     s = CommandWrapper.new
@@ -18,13 +19,14 @@ class CommandWrapperTests < MiniTest::Test
   end
 
   def test_can_create_exec_aliases_from_module_methods
-    s = CommandWrapper.new
-    m = GitWrapper
+    m = TEST_MODULE
+    s = CommandWrapper.for m
 
     s.include_module_as_exec_aliases m
     assert m.public_instance_methods.
             select { |m| ! s.methods.include? m }.
             empty?
+
   end
 
   def test_cannot_create_exec_aliases_from_methods_of_unrequired_modules
