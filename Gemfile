@@ -5,4 +5,6 @@ source "https://rubygems.org"
 # gem "rails"
 
 gem "minitest"
-gem "minitest
+gem "minitest-reporters"
+gem "minitest-focus"
+gem "pry"
