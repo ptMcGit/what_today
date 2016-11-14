@@ -1,4 +1,4 @@
-require_relative './test_helper.rb'
+require_relative './helper.rb'
 
 class CommandWrapperTests < MiniTest::Test
 
