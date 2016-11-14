@@ -2,7 +2,7 @@ module WhatToday
   require 'yaml'
 
   class Criteria
-    attr_reader :start_of_search
+    attr_reader :start_of_search, :ignore_up_to_date
 
     class FileNotFoundError < StandardError
     end
@@ -15,10 +15,10 @@ module WhatToday
 
     def to_h
       {
-        start_directory:  @start_of_search,
-        ignore_repos:     @ignored_repos,
-        track_repos:      @tracked_repos,
-        prune_paths:      @prune_paths
+        start_directory:    @start_of_search,
+        ignore_repos:       @ignored_repos,
+        track_repos:        @tracked_repos,
+        prune_paths:        @prune_paths
       }
     end
 
@@ -54,6 +54,7 @@ module WhatToday
     def mock_config_file
       %{
       start_of_search:  #{home_dir}
+      ignore_up_to_date: true
       prune_paths:
         - #{home_dir}/.Trash
         - #{home_dir}/.local
@@ -123,6 +124,7 @@ module WhatToday
 
     def assign_configs config_data
       @start_of_search    = config_data["start_of_search"]    ||= home_dir
+      @ignore_up_to_date    = config_data["ignore_up_to_date"]||= true
       @prune_paths        = config_data["prune_paths"]        ||= []
       @ignored_repos      = config_data["ignored_repos"]      ||= []
       @tracked_repos      = config_data["tracked_repos"]      ||= []

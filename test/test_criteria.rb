@@ -6,6 +6,7 @@ class CriteriaClassTests < MiniTest::Test
   def config_file_template
     %{
 start_of_search: #{ENV['HOME']}
+ignore_up_to_date: true
 prune_paths:
   - /repo_2
   - /repo_2
@@ -17,6 +18,7 @@ tracked_repos:
   def provides_default_config? c
     assert_nil c.instance_variable_get("@config_file")
     assert_equal c.instance_variable_get("@start_of_search"), ENV["HOME"]
+    assert_equal c.instance_variable_get("@ignore_up_to_date"), true
     assert_equal c.instance_variable_get("@prune_paths"),
                  [
                    ENV["HOME"] + "/.Trash",
@@ -38,6 +40,7 @@ tracked_repos:
     cf.write(config_file_template)
     c = WhatToday::Criteria.new(config_file: cf)
     assert_equal c.instance_variable_get("@config_file"), cf
+    assert_equal c.instance_variable_get("@ignore_up_to_date"), true
     assert_equal c.instance_variable_get("@start_of_search"), ENV["HOME"]
     assert_equal c.instance_variable_get("@ignored_repos").count, 0
     assert_equal c.instance_variable_get("@tracked_repos").count, 0
