@@ -17,7 +17,7 @@ module WhatToday
       @prune_paths        = opts[:prune_paths]        ||= []
       @files              = find_files
 
-      @skip_path_conditions = {}
+      @skip_path_conditions = []
     end
 
     def find_files
@@ -29,17 +29,12 @@ module WhatToday
       end
     end
 
-    # path is skipped if this evaluates to true
-    def add_skip_path_method block_as_string
-      @skip_path_conditions[block_as_string] = eval("Proc.new" + block_as_string)
-    end
-
-    def remove_skip_path_method block_as_string
-      @skip_path_conditions.delete_if { |k,v| k == block_as_string }
+    def add_skip_path_method proc
+      @skip_path_conditions.push proc
     end
 
     def skip_path? path
-      @skip_path_conditions.values.each do |m|
+      @skip_path_conditions.each do |m|
         return true if m.call(path)
       end
       return false
