@@ -30,6 +30,7 @@ module WhatToday
       else
         return false
       end
+      return true
     end
 
     protected
