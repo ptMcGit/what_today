@@ -59,7 +59,7 @@ class FileFinderClassTests < MiniTest::Test
     ff = FileFinder.new(start_directory: TEST_DIR_PREFIX, prune_paths: ["/dir/subdir2", "/dir/subdir4"])
     assert_equal ff.files.to_a, EXPECTED_DIR_ITEMS.to_a - ["/dir/subdir2", "/dir/subdir4"]
   end
-focus
+
   def test_can_add_skip_path_condition
     ff = FileFinder.new(start_directory: TEST_DIR_PREFIX)
     ff.add_skip_path_method %{{ |path| File.basename(path) != \".git\" }}
@@ -73,35 +73,6 @@ focus
     assert_equal ff.files.to_a, []
     ff.remove_skip_path_method "{ true }"
     assert_equal ff.files.to_a, EXPECTED_DIR_ITEMS.to_a
-  end
-
-  def test_finds_mock_repos
-    ff = create_find_mock
-    assert_equal ["/dir/subdir1","/dir/subdir2","/dir/subdir3"], ff.repos
-    refute ff.repos.include? "/dir/subdir4"
-  end
-
-  def test_ignores_specified_repos
-    ff = create_find_mock( {ignore_repos: [TEST_DIR_PREFIX + "/subdir1"]} )
-    assert_equal ["/dir/subdir2", "/dir/subdir3"], ff.repos
-  end
-
-  def test_tracks_specified_repos
-    ff = create_find_mock( {track_repos: [TEST_DIR_PREFIX + "/subdir1"]} )
-    assert_equal ["/dir/subdir1"], ff.repos
-  end
-
-  def test_ignores_takes_precedences
-    ff = create_find_mock( {
-                             track_repos:   [TEST_DIR_PREFIX + "/subdir1"],
-                             ignore_repos:  [TEST_DIR_PREFIX + "/subdir2"]
-                           } )
-    assert_equal ["/dir/subdir1", "/dir/subdir3"], ff.repos
-  end
-
-  def test_can_prune_paths
-    ff = create_find_mock( {prune_paths: [TEST_DIR_PREFIX + "/subdir2"]} )
-    assert_equal ["/dir/subdir1", "/dir/subdir3"], ff.repos
   end
 
 end
