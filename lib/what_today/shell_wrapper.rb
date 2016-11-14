@@ -3,9 +3,9 @@ module WhatToday
 
     attr_accessor     :working_dir, :preferred_shell
 
-    def initialize
-      @working_dir = '.'
-      @preferred_shell       = ENV['SHELL']
+    def initialize opts={}
+      @working_dir      = opts[:working_dir] ||= '.'
+      @preferred_shell  = ENV['SHELL']
     end
 
     def exec command
@@ -32,8 +32,15 @@ module WhatToday
       end
     end
 
-    def new_shell
-      exec_command "exec #{@preferred_shell} -l"
+    def self.new_shell opts={}
+      self.new(opts).tap do |s|
+        s.open_prompt
+        s
+      end
+    end
+
+    def open_prompt
+      system( "#{cd} && exec #{preferred_shell} -l")
     end
 
     private
