@@ -42,5 +42,12 @@ tracked_repos:
     assert_equal c.instance_variable_get("@ignored_repos").count, 0
     assert_equal c.instance_variable_get("@tracked_repos").count, 0
   end
+focus
+  def test_does_not_ignore_file_that_is_tracked
+    c = WhatToday::Criteria.new
+    tr = ["/dir"]
+    c.instance_variable_set("@tracked_repos", tr)
+    assert_equal c.ignore_repo?(tr[0]), false
+  end
 
 end

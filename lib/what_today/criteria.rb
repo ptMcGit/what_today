@@ -22,6 +22,16 @@ module WhatToday
       }
     end
 
+    def ignore_repo? path
+      if not @tracked_repos.empty?
+        return false if @tracked_repos.include? path
+      elsif not @ignored_repos.empty?
+        return true if @ignored_repos.include? path
+      else
+        return false
+      end
+    end
+
     protected
 
     def set_configs
