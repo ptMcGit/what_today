@@ -27,7 +27,7 @@ tracked_repos:
   end
 
   def test_provide_config_for_non_existent_file
-    c = Criteria.new(config_file: "./nonexistent_file")
+    c = WhatToday::Criteria.new(config_file: "./nonexistent_file")
     assert_equal File.exist?( "./nonexistent_file" ), false
     assert provides_default_config?( c ), true
   end
@@ -36,7 +36,7 @@ tracked_repos:
     require 'tempfile'
     cf = Tempfile.new(File.basename($0))
     cf.write(config_file_template)
-    c = Criteria.new(config_file: cf)
+    c = WhatToday::Criteria.new(config_file: cf)
     assert_equal c.instance_variable_get("@config_file"), cf
     assert_equal c.instance_variable_get("@start_of_search"), ENV["HOME"]
     assert_equal c.instance_variable_get("@ignored_repos").count, 0

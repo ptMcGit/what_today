@@ -1,3 +1,5 @@
+module WhatToday
+
   class CommandWrapper < ShellWrapper
 
     def initialize *args
@@ -46,3 +48,4 @@
     end
 
   end
+end

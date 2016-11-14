@@ -3,7 +3,7 @@ require_relative './helper.rb'
 class FileFinderClassTests < MiniTest::Test
 
   def create_ff config={}
-    FileFinder.new({start_directory: TEST_DIR_PREFIX}.merge(config))
+    WhatToday::FileFinder.new({start_directory: TEST_DIR_PREFIX}.merge(config))
   end
 
   def test_finds_all_test_paths_with_no_pruning

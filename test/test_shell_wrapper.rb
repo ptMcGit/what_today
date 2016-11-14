@@ -3,19 +3,19 @@ require_relative './helper.rb'
 class ShellWrapperTests < MiniTest::Test
 
   def test_can_use_exec_shell
-    s = ShellWrapper.new
+    s = WhatToday::ShellWrapper.new
     r = s.exec 'echo "hello world"'
     assert_equal "hello world", r.chomp
   end
 
   def test_can_use_regular_shell
-    s = ShellWrapper.new
+    s = WhatToday::ShellWrapper.new
     r = s.exec 'echo "hello world"'
     assert r
   end
 
   def test_can_change_dir
-    s = ShellWrapper.new
+    s = WhatToday::ShellWrapper.new
     dir = File.expand_path("../")
     s.working_dir = "../"
     working_dir = s.exec('pwd').chomp
@@ -23,7 +23,7 @@ class ShellWrapperTests < MiniTest::Test
   end
 
   def test_cannot_use_nonexistent_dir
-    s = ShellWrapper.new
+    s = WhatToday::ShellWrapper.new
     dir = "./nonexistent_dir"
     refute File.exist?(dir)
     assert_raises("directory is non-existent") {
@@ -32,14 +32,14 @@ class ShellWrapperTests < MiniTest::Test
   end
 
   def test_can_change_shell
-    s = ShellWrapper.new
+    s = WhatToday::ShellWrapper.new
     shell = '/bin/sh'
     s.preferred_shell = shell
     assert_equal s.preferred_shell, shell
   end
 
   def test_cannot_change_shell_to_invalid_shell
-    s = ShellWrapper.new
+    s = WhatToday::ShellWrapper.new
     shell = '/bin/something'
     refute File.exist?(shell)
     assert_raises("argument to shell assignment is invalid") {

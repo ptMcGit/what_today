@@ -4,11 +4,11 @@ require 'minitest/focus'
 require 'find'
 require 'pry'
 
-require_relative '../criteria.rb'
-require_relative '../file_finder.rb'
-require_relative '../shell_wrapper.rb'
-require_relative '../command_wrapper.rb'
-require_relative '../git_wrapper.rb'
+require_relative '../lib/what_today/criteria.rb'
+require_relative '../lib/what_today/file_finder.rb'
+require_relative '../lib/what_today/shell_wrapper.rb'
+require_relative '../lib/what_today/command_wrapper.rb'
+require_relative '../lib/what_today/git_wrapper.rb'
 
 Minitest::Reporters.use! Minitest::Reporters::ProgressReporter.new
 
