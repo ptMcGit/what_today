@@ -4,7 +4,7 @@ class FileFinder
 
   GIT_DIR_NAME=".git"
 
-  attr_reader :repos
+  attr_reader :files
   attr_reader :start_directory
 
   include Find
@@ -15,47 +15,35 @@ class FileFinder
     end
 
     @start_directory    = opts[:start_directory]    ||= "."
-    @ignore_repos       = opts[:ignore_repos]       ||= []
-    @track_repos        = opts[:track_repos]        ||= []
     @prune_paths        = opts[:prune_paths]        ||= []
+    @files              = find_files
 
-    @repos              = []
-    query!
+    @skip_path_conditions = {}
   end
 
-  def ignore_repos= arg
-    raise TypeError if (arg.class != Array)
-  end
-
-  def track_repos= arg
-    raise TypeError if (arg.class != Array)
-  end
-
-  def find_files &block
-    find(@start_directory).each &block
-  end
-
-  def query!
-    @repos = []
-    find_files do |path|
-      prune if should_prune_path? path
-      next if File.basename(path) != GIT_DIR_NAME
-      if not @ignore_repos.empty?
-        @repos.push(File.dirname( path )) unless @ignore_repos.include?(File.dirname( path ))
-      elsif not @track_repos.empty?
-        @repos.push(File.dirname( path )) if @track_repos.include?(File.dirname( path ))
-      else
-        @repos.push(File.dirname( path ))
+  def find_files
+    Enumerator.new do |yielder|
+      find(@start_directory).each do |path|
+        prune if @prune_paths.include? path
+        yielder.yield(path) unless skip_path?(path)
       end
     end
   end
 
-  def should_prune_path? path
-    @prune_paths.include? path
+  # path is skipped if this evaluates to true
+  def add_skip_path_method block_as_string
+    @skip_path_conditions[block_as_string] = eval("Proc.new" + block_as_string)
   end
 
-  def match_on_pattern(string, pattern)
-    p = pattern.gsub('.','\.').gsub('/','\/').gsub('*','.*')
-    string[/#{p}/]
+  def remove_skip_path_method block_as_string
+    @skip_path_conditions.delete_if { |k,v| k == block_as_string }
   end
+
+  def skip_path? path
+    @skip_path_conditions.values.each do |m|
+      return true if m.call(path)
+    end
+    return false
+  end
+
 end
