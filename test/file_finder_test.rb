@@ -2,14 +2,10 @@ require_relative './test_helper.rb'
 
 class FileFinderClassTests < MiniTest::Test
 
-  TEST_DIR_PREFIX = File.dirname(Dir.pwd + "/" + $0) + "/test_dir_tree/dir"
-  EXPECTED_DIR_ITEMS = Find.find( TEST_DIR_PREFIX )
-
   def test_finds_all_test_paths_with_no_pruning
     ff = FileFinder.new(start_directory: TEST_DIR_PREFIX)
     assert_equal ff.files.to_a, EXPECTED_DIR_ITEMS.to_a
   end
-
 
   def test_prunes_specified_dirs
     ff = FileFinder.new(start_directory: TEST_DIR_PREFIX, prune_paths: ["/dir/subdir2", "/dir/subdir4"])
