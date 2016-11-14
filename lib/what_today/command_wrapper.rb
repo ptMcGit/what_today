@@ -7,9 +7,15 @@ module WhatToday
       @aliases = {}
     end
 
-    def self.for module_arg
+    def self.exec_aliases_for module_arg
       self.new.tap do |s|
         s.include_module_as_exec_aliases module_arg
+      end
+    end
+
+    def self.shell_aliases_for module_arg
+      self.new.tap do |s|
+        s.include_module_as_shell_aliases module_arg
       end
     end
 
@@ -46,6 +52,17 @@ module WhatToday
         raise StandardError.new("cannot include module that has not been required")
       end
     end
+
+    def include_module_as_shell_aliases module_arg
+      if ( defined?(module_arg) && module_arg.is_a?(Module) )
+        module_arg.singleton_methods.each do |meth|
+          shell_alias(meth.to_s, module_arg.send(meth))
+        end
+      else
+        raise StandardError.new("cannot include module that has not been required")
+      end
+    end
+
 
   end
 end
