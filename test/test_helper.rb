@@ -14,7 +14,7 @@ Minitest::Reporters.use! Minitest::Reporters::ProgressReporter.new
 
 # setup test directory if not setup
 
-TEST_DIR_PREFIX = File.dirname(Dir.pwd + "/" + $0) + "/test_dir_tree/dir"
+TEST_DIR_PREFIX = (File.dirname(__FILE__) + "/test_dir_tree/dir")
 EXPECTED_DIR_ITEMS = Find.find( TEST_DIR_PREFIX )
 
 def test_directories
