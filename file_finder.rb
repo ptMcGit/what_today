@@ -2,8 +2,6 @@ require 'find'
 
 class FileFinder
 
-  GIT_DIR_NAME=".git"
-
   attr_reader :files
   attr_reader :start_directory
 
