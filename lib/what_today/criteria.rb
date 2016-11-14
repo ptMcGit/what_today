@@ -16,8 +16,6 @@ module WhatToday
     def to_h
       {
         start_directory:    @start_of_search,
-        ignore_repos:       @ignored_repos,
-        track_repos:        @tracked_repos,
         prune_paths:        @prune_paths
       }
     end
